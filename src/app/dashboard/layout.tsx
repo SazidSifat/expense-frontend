@@ -41,7 +41,7 @@ export default function DashboardLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col  lg:flex-row">
             {/* Mobile Top Navbar */}
             <header className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl border-b border-border/50 px-4 py-3">
                 <div className="flex items-center justify-between">
@@ -81,7 +81,7 @@ export default function DashboardLayout({
 
             <Sidebar />
             <main className="flex-1 pt-20 lg:pt-0 p-6 lg:p-8 overflow-auto">
-                <div className="max-w-7xl mx-auto">{children}</div>
+                <div className="max-w-7xl py-10 mx-auto">{children}</div>
             </main>
         </div>
     );

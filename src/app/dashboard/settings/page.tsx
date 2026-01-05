@@ -5,6 +5,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { AlertTriangle, Trash2, Database, History } from 'lucide-react';
 import { clearDatabase, deleteSettlementHistory, getActivityLogs } from '@/lib/api';
 import {
@@ -22,6 +33,8 @@ export default function SettingsPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
     const [logs, setLogs] = useState<any[]>([]);
+    const [clearDbDialogOpen, setClearDbDialogOpen] = useState(false);
+    const [deleteHistoryDialogOpen, setDeleteHistoryDialogOpen] = useState(false);
 
     useEffect(() => {
         if (user?.role === 'admin') {
@@ -54,10 +67,7 @@ export default function SettingsPage() {
     }
 
     const handleClearDatabase = async () => {
-        if (!confirm('EXTREME WARNING: This will delete ALL data (expenses, settlements, balances). This action CANNOT be undone. Are you sure?')) {
-            return;
-        }
-
+        setClearDbDialogOpen(false);
         setIsLoading(true);
         setMessage(null);
         try {
@@ -72,10 +82,7 @@ export default function SettingsPage() {
     };
 
     const handleDeleteHistory = async () => {
-        if (!confirm('WARNING: This will delete all settlement history logs. Are you sure?')) {
-            return;
-        }
-
+        setDeleteHistoryDialogOpen(false);
         setIsLoading(true);
         setMessage(null);
         try {
@@ -122,28 +129,76 @@ export default function SettingsPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <Button
-                        variant="destructive"
-                        className="w-full justify-start gap-2"
-                        onClick={handleClearDatabase}
-                        disabled={isLoading}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                        Clear Entire Database
-                    </Button>
+                    <AlertDialog open={clearDbDialogOpen} onOpenChange={setClearDbDialogOpen}>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="destructive"
+                                className="w-full justify-start gap-2"
+                                disabled={isLoading}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Clear Entire Database
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                                    <AlertTriangle className="h-5 w-5" />
+                                    Extreme Warning
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will delete <strong>ALL data</strong> including expenses, settlements, and balances.
+                                    This action <strong>CANNOT be undone</strong>. Users will be preserved.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleClearDatabase}
+                                    className="bg-destructive text-white hover:bg-destructive/90"
+                                >
+                                    Yes, Clear Database
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                     <p className="text-xs text-muted-foreground">
                         Removes all expenses, settlements, and balances. Users are preserved.
                     </p>
 
-                    <Button
-                        variant="outline"
-                        className="w-full justify-start gap-2 text-destructive hover:bg-destructive/10"
-                        onClick={handleDeleteHistory}
-                        disabled={isLoading}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                        Delete Settlement History
-                    </Button>
+                    <AlertDialog open={deleteHistoryDialogOpen} onOpenChange={setDeleteHistoryDialogOpen}>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className="w-full justify-start gap-2 text-destructive hover:bg-destructive/10"
+                                disabled={isLoading}
+                            >
+                                <Trash2 className="h-4 w-4" />
+                                Delete Settlement History
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                                    <AlertTriangle className="h-5 w-5" />
+                                    Warning
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This will delete all settlement history logs. Are you sure you want to proceed?
+                                    Balances will remain unaffected.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={handleDeleteHistory}
+                                    className="bg-destructive hover:bg-destructive/90 text-white"
+                                >
+                                    Yes, Delete History
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                     <p className="text-xs text-muted-foreground">
                         Removes only the settlement transaction logs. Balances remain unaffected.
                     </p>

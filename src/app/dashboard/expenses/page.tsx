@@ -216,7 +216,6 @@ export default function ExpensesPage() {
 
         setIsModalOpen(true);
     };
-
     const handleDelete = async (id: string) => {
         console.log('Deleting expense with ID:', id);
 
